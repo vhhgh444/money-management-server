@@ -34,19 +34,21 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
          http
-                .cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/register",
-                                "/activate",
-                                "/login",
-                                "/status",
-                                "/health"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                ).sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                 .csrf(AbstractHttpConfigurer::disable)
+                 .authorizeHttpRequests(auth->auth.anyRequest().permitAll());
+//                .cors(Customizer.withDefaults())
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers(
+//                                "/register",
+//                                "/activate",
+//                                "/login",
+//                                "/status",
+//                                "/health"
+//                        ).permitAll()
+//                        .anyRequest().authenticated()
+//                ).sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
