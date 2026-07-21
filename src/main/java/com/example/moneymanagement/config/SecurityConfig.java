@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.http.HttpMethod;
 
 
 import org.springframework.security.config.Customizer;
@@ -34,10 +35,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
          http
-                 .csrf(AbstractHttpConfigurer::disable)
-                 .authorizeHttpRequests(auth->auth.anyRequest().permitAll());
-//                .cors(Customizer.withDefaults())
-//                .csrf(AbstractHttpConfigurer::disable)
+//                 .csrf(AbstractHttpConfigurer::disable)
+//                 .authorizeHttpRequests(auth->auth.anyRequest().permitAll());
+                .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                 .authorizeHttpRequests(auth -> auth
+                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                         .requestMatchers(
+                                 "/register",
+                                 "/activate",
+                                 "/login",
+                                 "/status",
+                                 "/health"
+                         ).permitAll()
+                         .anyRequest().authenticated()
 //                .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers(
 //                                "/register",
@@ -47,8 +58,8 @@ public class SecurityConfig {
 //                                "/health"
 //                        ).permitAll()
 //                        .anyRequest().authenticated()
-//                ).sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                ).sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -58,17 +69,52 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource(){
+//        CorsConfiguration corsConfiguration=new CorsConfiguration();
+//        corsConfiguration.setAllowedOriginPatterns(List.of("*"));
+//        corsConfiguration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+//        corsConfiguration.setAllowedHeaders(List.of("Authorization","Content-Type","Accept"));
+//        corsConfiguration.setAllowCredentials(true);
+//        UrlBasedCorsConfigurationSource source=new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**",corsConfiguration);
+//        return source;
+//    }
+
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(){
-        CorsConfiguration corsConfiguration=new CorsConfiguration();
-        corsConfiguration.setAllowedOriginPatterns(List.of("*"));
-        corsConfiguration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
-        corsConfiguration.setAllowedHeaders(List.of("Authorization","Content-Type","Accept"));
-        corsConfiguration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source=new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**",corsConfiguration);
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowedOrigins(
+                List.of("http://localhost:5173")
+        );
+
+        config.setAllowedMethods(
+                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        );
+
+        config.setAllowedHeaders(
+                List.of("*")
+        );
+
+        config.setExposedHeaders(
+                List.of("Authorization")
+        );
+
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration(
+                "/**",
+                config
+        );
+
         return source;
     }
+
     @Bean
     public AuthenticationManager authenticationManager(){
         DaoAuthenticationProvider authenticationProvider=new DaoAuthenticationProvider();
