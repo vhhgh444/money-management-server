@@ -9,9 +9,15 @@ import com.example.moneymanagement.entity.ProfileEntity;
 import com.example.moneymanagement.repository.CategoryRepository;
 import com.example.moneymanagement.repository.IncomeRepo;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -96,4 +102,45 @@ public class IncomeService {
                 .updatedAt(income.getUpdatedAt())
                 .build();
     }
+//    public byte[] downloadIncomeExcel() {
+//
+//        List<IncomeDTO> incomes = getCurrentMonthsIncomesForCurrentUser();
+//
+//        try (Workbook workbook = new XSSFWorkbook();
+//             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+//
+//            Sheet sheet = workbook.createSheet("Income Details");
+//
+//            // Header Row
+//            Row header = sheet.createRow(0);
+//            header.createCell(0).setCellValue("Name");
+//            header.createCell(1).setCellValue("Category");
+//            header.createCell(2).setCellValue("Amount");
+//            header.createCell(3).setCellValue("Date");
+//
+//            // Data Rows
+//            int rowNum = 1;
+//
+//            for (IncomeDTO income : incomes) {
+//                Row row = sheet.createRow(rowNum++);
+//
+//                row.createCell(0).setCellValue(income.getName());
+//                row.createCell(1).setCellValue(income.getCategoryName());
+//                row.createCell(2).setCellValue(income.getAmount().doubleValue());
+//                row.createCell(3).setCellValue(income.getDate().toString());
+//            }
+//
+//            // Auto-size columns
+//            for (int i = 0; i < 4; i++) {
+//                sheet.autoSizeColumn(i);
+//            }
+//
+//            workbook.write(outputStream);
+//
+//            return outputStream.toByteArray();
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException("Failed to generate Excel file", e);
+//        }
+//    }
 }
